@@ -2,6 +2,9 @@
 
 Painel web leve para monitorar um servidor Linux, inspirado no btop. Backend em Python 3 usando apenas a biblioteca padrão. Não requer pip, Docker, Node.js ou banco de dados.
 
+<img width="1871" height="857" alt="image" src="https://github.com/user-attachments/assets/f84d665a-935b-4604-9f7c-727d65eeda3d" />
+
+
 ## Métricas
 
 - CPU (amostragem entre requisições), quantidade de CPUs e temperaturas quando expostas em `/sys/class/thermal`
