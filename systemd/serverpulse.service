@@ -1,0 +1,29 @@
+[Unit]
+Description=ServerPulse Linux Metrics Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=serverpulse
+Group=serverpulse
+WorkingDirectory=/opt/serverpulse
+Environment=SERVERPULSE_HOST=127.0.0.1
+Environment=SERVERPULSE_PORT=8765
+Environment=SERVERPULSE_REFRESH=1
+ExecStart=/usr/bin/python3 /opt/serverpulse/serverpulse.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/proc /sys
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

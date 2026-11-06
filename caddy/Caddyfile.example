@@ -1,0 +1,9 @@
+# Exemplo para adicionar ao seu Caddyfile.
+# Troque monitor.seudominio.com pelo host que você controla.
+# Gere o hash com: caddy hash-password --plaintext 'UMA_SENHA_FORTE'
+monitor.seudominio.com {
+    basic_auth {
+        SEU_USUARIO HASH_GERADO_PELO_CADDY
+    }
+    reverse_proxy 127.0.0.1:8765
+}
