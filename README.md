@@ -2,14 +2,7 @@
 
 Painel web leve para monitorar um servidor Linux, inspirado no btop. O backend usa Python 3 e a biblioteca padrão; não requer pip, Node.js nem banco de dados externo. O histórico é armazenado em SQLite.
 
-<<<<<<< HEAD
 ## Recursos
-=======
-<img width="1871" height="857" alt="image" src="https://github.com/user-attachments/assets/f84d665a-935b-4604-9f7c-727d65eeda3d" />
-
-
-## Métricas
->>>>>>> 20433a1c44f7ce31a1c83b9a7688217144f39d2c
 
 - CPU, temperaturas, RAM, swap, volumes, rede, uptime, load average e processos.
 - Histórico persistido de CPU, RAM e rede, com gráficos de 24 horas e 7 dias e picos do período.
