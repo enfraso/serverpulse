@@ -5,5 +5,5 @@ monitor.seudominio.com {
     basic_auth {
         SEU_USUARIO HASH_GERADO_PELO_CADDY
     }
-    reverse_proxy 127.0.0.1:8765
+    reverse_proxy 127.0.0.1:8764
 }

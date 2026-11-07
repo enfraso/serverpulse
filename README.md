@@ -1,43 +1,54 @@
 # ServerPulse
 
-Painel web leve para monitorar um servidor Linux, inspirado no btop. Backend em Python 3 usando apenas a biblioteca padrão. Não requer pip, Docker, Node.js ou banco de dados.
+Painel web leve para monitorar um servidor Linux, inspirado no btop. O backend usa Python 3 e a biblioteca padrão; não requer pip, Node.js nem banco de dados externo. O histórico é armazenado em SQLite.
 
-## Métricas
+## Recursos
 
-- CPU (amostragem entre requisições), quantidade de CPUs e temperaturas quando expostas em `/sys/class/thermal`
-- RAM e swap via `/proc/meminfo`
-- Uso dos sistemas de arquivos locais
-- Taxas e totais de rede via `/proc/net/dev`
-- Load average, uptime, hostname, kernel e arquitetura
-- Processos com PID, nome, usuário, CPU aproximada e RSS
-
-A API lê `/proc` e `/sys` a cada chamada. A interface consulta `/api/metrics` a cada segundo.
+- CPU, temperaturas, RAM, swap, volumes, rede, uptime, load average e processos.
+- Histórico persistido de CPU, RAM e rede, com gráficos de 24 horas e 7 dias e picos do período.
+- Alertas no painel para temperatura alta, memória elevada, serviços systemd com falha, containers parados e alvos TCP indisponíveis.
+- Lista de serviços systemd e containers Docker, quando as ferramentas e permissões estão disponíveis.
+- Portas TCP em escuta e quantidade de conexões estabelecidas.
+- Pesquisa por processos exibidos, serviços, containers, portas e verificações TCP.
 
 ## Requisitos
 
-- Linux com `/proc` e Python 3.9+
-- systemd (para instalação como serviço)
-- Caddy já instalado (opcional, recomendado para HTTPS)
+- Linux com `/proc`, Python 3.9+ e systemd (para instalação como serviço).
+- Docker instalado e permissões de acesso ao daemon para exibir containers (opcional).
+- Caddy já instalado (opcional, recomendado para HTTPS).
 
 ## Instalação no Debian 13 / DietPi
 
 Clone o repositório no servidor:
 
 ```bash
-git clone https://github.com/servepulse/serverpulse.git
+git clone https://github.com/enfraso/serverpulse.git
 cd serverpulse
 sudo bash install.sh
 ```
+
+O serviço escuta em `127.0.0.1:8764`. O histórico persistente fica em `/var/lib/serverpulse/history.sqlite3` e é amostrado a cada 60 segundos, com retenção de 8 dias. O usuário do serviço precisa de acesso de escrita a esse diretório; `StateDirectory` do systemd o prepara automaticamente.
 
 Verifique:
 
 ```bash
 sudo systemctl status serverpulse
-curl http://127.0.0.1:8765/api/health
-curl -s http://127.0.0.1:8765/api/metrics | python3 -m json.tool | head -50
+curl http://127.0.0.1:8764/api/health
+curl -s http://127.0.0.1:8764/api/metrics | python3 -m json.tool | head -50
+curl -s 'http://127.0.0.1:8764/api/history?period=24h' | python3 -m json.tool
 ```
 
-A aplicação fica em `http://127.0.0.1:8765`, acessível localmente no próprio host. **Não altere `SERVERPULSE_HOST` para `0.0.0.0`** sem configurar firewall e autenticação apropriados.
+Não altere `SERVERPULSE_HOST` para `0.0.0.0` sem configurar firewall e autenticação apropriados.
+
+## Verificações de disponibilidade
+
+Configure opcionalmente alvos TCP por variável de ambiente no serviço systemd:
+
+```ini
+Environment="SERVERPULSE_CHECKS=web=127.0.0.1:8080,db=10.0.0.12:5432"
+```
+
+Até 20 alvos são testados com timeout curto. IPv6 pode ser escrito entre colchetes, por exemplo `local=[::1]:8080`. Falhas aparecem como alertas no painel.
 
 ## Publicar pelo Caddy
 
@@ -48,7 +59,7 @@ monitor.seudominio.com {
     basic_auth {
         SEU_USUARIO HASH_GERADO_PELO_CADDY
     }
-    reverse_proxy 127.0.0.1:8765
+    reverse_proxy 127.0.0.1:8764
 }
 ```
 
@@ -67,23 +78,35 @@ sudo caddy validate --config /etc/caddy/Caddyfile
 sudo systemctl reload caddy
 ```
 
-Acesse `https://monitor.seudominio.com`. O Caddy cuida do HTTPS e do Basic Auth; a API continua escutando somente no loopback. Se seu Caddyfile usa outro formato de organização, incorpore o bloco no local adequado sem apagar os sites existentes.
+O Caddy cuida do HTTPS e do Basic Auth; a API continua escutando somente no loopback. Incorpore o bloco no local adequado do Caddyfile sem apagar os sites existentes.
 
-## Ajustes opcionais
+## Configuração
 
-O serviço lê variáveis de ambiente:
+O serviço lê as seguintes variáveis de ambiente:
 
-- `SERVERPULSE_HOST` (padrão `127.0.0.1`)
-- `SERVERPULSE_PORT` (padrão `8765`)
-- `SERVERPULSE_REFRESH` (padrão `1`, intervalo usado para estimar CPU de processos)
-- `SERVERPULSE_INTERFACE` (vazio = soma interfaces não-loopback; ou defina, por exemplo, `eth0`)
+- `SERVERPULSE_HOST`: endereço de escuta (padrão `127.0.0.1`).
+- `SERVERPULSE_PORT`: porta HTTP (padrão `8764`).
+- `SERVERPULSE_DATA_DIR`: diretório do histórico (padrão `/var/lib/serverpulse`).
+- `SERVERPULSE_HISTORY_INTERVAL`: intervalo de amostragem em segundos (padrão `60`, mínimo `15`).
+- `SERVERPULSE_TEMP_WARN_C`: limite de alerta térmico em °C (padrão `80`).
+- `SERVERPULSE_MEMORY_WARN_PERCENT`: limite de alerta de memória em percentual (padrão `90`).
+- `SERVERPULSE_CHECKS`: lista opcional de verificações TCP `nome=host:porta`, separadas por vírgula.
+- `SERVERPULSE_REFRESH`: intervalo aproximado para estimar CPU de processos (padrão `1`).
+- `SERVERPULSE_INTERFACE`: vazio para agregar interfaces não-loopback ou um nome específico, como `eth0`.
 
-Para mudar a interface, edite `/etc/systemd/system/serverpulse.service`, adicione uma linha `Environment=SERVERPULSE_INTERFACE=eth0` e execute:
+Para mudar uma variável no serviço, edite `/etc/systemd/system/serverpulse.service` e aplique:
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl restart serverpulse
 ```
+
+## API
+
+- `GET /api/health`: estado e versão.
+- `GET /api/metrics`: métricas em tempo real, serviços, containers, conexões e alertas.
+- `GET /api/history?period=24h` ou `period=7d`: pontos agrupados e picos registrados.
+- `GET /api/search?q=termo`: pesquisa nos itens monitorados.
 
 ## Desenvolvimento local
 
@@ -91,20 +114,14 @@ sudo systemctl restart serverpulse
 python3 serverpulse.py
 ```
 
-Abra `http://127.0.0.1:8765`.
+Abra `http://127.0.0.1:8764`. Defina `SERVERPULSE_DATA_DIR` para um diretório gravável no ambiente local se necessário.
 
-## Segurança
+## Segurança e limitações
 
-- O backend escuta em `127.0.0.1`, não diretamente na internet.
-- Proteja o acesso externo com Caddy `basic_auth` e HTTPS.
-- Não exponha a porta 8765 no roteador/firewall.
-- O usuário do serviço é dedicado e sem shell de login.
-- A lista de processos e métricas pode revelar nomes de serviços e carga do host; mantenha autenticação ativa.
-- O painel é somente leitura: não executa comandos administrativos nem permite encerrar processos.
-
-## Limitações
-
-- Temperatura depende do driver/kernel e pode não estar disponível em todo hardware (especialmente algumas placas ARM).
-- O percentual de CPU do processo é uma estimativa baseada no intervalo de consulta e pode variar.
-- Dispositivos de rede são agregados por padrão, excluindo `lo`; filtre com `SERVERPULSE_INTERFACE`.
-- É uma ferramenta de monitoramento leve, não substitui Prometheus, Netdata ou ferramentas de alerta.
+- O backend escuta em `127.0.0.1`; proteja acesso externo com HTTPS e autenticação e não exponha a porta diretamente na internet.
+- A leitura de serviços systemd, containers Docker e processos depende das permissões do usuário do serviço. O acesso ao socket Docker concede privilégios elevados; conceda-o somente se necessário.
+- Os alertas são exibidos no painel, sem envio por e-mail ou notificações externas.
+- O monitoramento TCP mostra portas em escuta e contagem de conexões estabelecidas; não associa sockets a processos.
+- Temperaturas dependem do driver/kernel e podem não estar disponíveis em todo hardware.
+- A lista de processos exibida e pesquisável contém os 12 principais por CPU/memória.
+- O percentual de CPU de processos é uma estimativa e pode variar.

@@ -8,8 +8,10 @@ User=serverpulse
 Group=serverpulse
 WorkingDirectory=/opt/serverpulse
 Environment=SERVERPULSE_HOST=127.0.0.1
-Environment=SERVERPULSE_PORT=8765
+Environment=SERVERPULSE_PORT=8764
 Environment=SERVERPULSE_REFRESH=1
+Environment=SERVERPULSE_DATA_DIR=/var/lib/serverpulse
+StateDirectory=serverpulse
 ExecStart=/usr/bin/python3 /opt/serverpulse/serverpulse.py
 Restart=on-failure
 RestartSec=3

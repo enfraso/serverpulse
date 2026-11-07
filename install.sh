@@ -19,5 +19,5 @@ echo
 echo "ServerPulse instalado."
 echo "Estado: systemctl status serverpulse"
 echo "Logs:   journalctl -u serverpulse -f"
-echo "Teste:  curl http://127.0.0.1:8765/api/health"
+echo "Teste:  curl http://127.0.0.1:8764/api/health"
 echo "O serviço escuta somente em 127.0.0.1; publique pelo Caddy com autenticação."
