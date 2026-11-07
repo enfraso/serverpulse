@@ -50,6 +50,50 @@ Environment="SERVERPULSE_CHECKS=web=127.0.0.1:8080,db=10.0.0.12:5432"
 
 Até 20 alvos são testados com timeout curto. IPv6 pode ser escrito entre colchetes, por exemplo `local=[::1]:8080`. Falhas aparecem como alertas no painel.
 
+## Docker sem dar acesso administrativo ao ServerPulse
+
+Por padrão, o usuário `serverpulse` não acessa `/var/run/docker.sock`. Não o adicione ao grupo `docker`: esse grupo normalmente pode controlar o daemon e obter privilégios equivalentes aos de root.
+
+Se quiser exibir containers sem dar acesso direto ao socket ao ServerPulse, pode usar um proxy do Docker API com operações de escrita desabilitadas. O exemplo abaixo usa o `tecnativa/docker-socket-proxy`; avalie e mantenha essa imagem atualizada conforme sua política de segurança:
+
+```bash
+sudo docker run -d \
+  --name serverpulse-docker-proxy \
+  --restart unless-stopped \
+  -p 127.0.0.1:2375:2375 \
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  -e PING=1 \
+  -e VERSION=1 \
+  -e CONTAINERS=1 \
+  -e POST=0 \
+  tecnativa/docker-socket-proxy
+```
+
+A porta `2375` fica vinculada apenas ao loopback. `CONTAINERS=1` libera a consulta de containers e `POST=0` bloqueia chamadas HTTP de escrita. O proxy, por precisar ler o socket, continua sendo um componente privilegiado; mantenha-o atualizado e não publique essa porta na rede.
+
+Configure o serviço ServerPulse para usar o proxy:
+
+```bash
+sudo systemctl edit serverpulse
+```
+
+Adicione ao drop-in:
+
+```ini
+[Service]
+Environment=DOCKER_HOST=tcp://127.0.0.1:2375
+```
+
+Então reinicie e confira o resultado:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart serverpulse
+curl -s http://127.0.0.1:8764/api/metrics | python3 -c 'import json,sys; print(json.load(sys.stdin)["docker"])'
+```
+
+O ServerPulse usa o cliente Docker instalado no host e herda `DOCKER_HOST` do serviço. Se o Docker usar outro caminho de socket, ajuste o volume do proxy. Para remover a integração, apague o drop-in em `/etc/systemd/system/serverpulse.service.d/` e reinicie o serviço.
+
 ## Publicar pelo Caddy
 
 Crie um subdomínio DNS apontando para seu servidor, por exemplo `monitor.seudominio.com`, e adicione ao Caddyfile:
