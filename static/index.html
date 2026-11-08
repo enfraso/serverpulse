@@ -27,27 +27,95 @@ table{width:100%;border-collapse:collapse;font-size:11px}th{text-align:left;colo
 .table-wrap{overflow:auto;max-height:300px}td.wrap{white-space:normal;min-width:120px}
 @media(max-width:950px){.metric{grid-column:span 6}.wide,.side{grid-column:span 12}}
 @media(max-width:600px){main{padding:18px 12px 26px}.hero{align-items:flex-start}.hero h2{font-size:23px}.clock{display:none}.metric{padding:14px;min-height:140px}.value{font-size:23px}.half{grid-column:span 12}.card{padding:15px}.sysrows{gap:14px}table{font-size:10px}#processes th:nth-child(3),#processes td:nth-child(3){display:none}}
+:root{--mint:#5de0b5;--blue:#69b9ff;--violet:#b59aff;--amber:#f2bd61;--red:#ff777d;--line:#25444d}
+body{background:radial-gradient(ellipse at 12% 0%,#123039 0,transparent 34%),#07151a}
+main{max-width:1480px}
+header{margin-bottom:26px}
+.hero{align-items:center;margin-bottom:24px;padding:20px 22px;border:1px solid #21444b;border-radius:16px;background:linear-gradient(110deg,#102b31,#0c2027)}
+.hero h2{font-size:clamp(23px,3vw,32px);letter-spacing:-1.1px}
+.hero p{margin-top:7px}
+.grid{gap:16px}
+.card{--accent:var(--mint);position:relative;overflow:hidden;border-color:#203d45;background:linear-gradient(145deg,#122830,#0e2026 75%);box-shadow:0 8px 24px #02090b35}
+.card:not(.metric)::before{position:absolute;inset:0 auto auto 18px;width:42px;height:2px;background:var(--accent);content:""}
+.metric{--accent:var(--mint);min-height:158px;padding:19px;background:linear-gradient(145deg,#15333a,#10252b)}
+.metric-cpu{--accent:var(--mint)}.metric-memory{--accent:var(--blue)}.metric-disk{--accent:var(--violet)}.metric-load{--accent:var(--amber)}
+.metric .head{color:#b4c7cb}.metric .head span{color:var(--accent);font-size:16px}
+.metric .value{color:var(--accent);font-size:32px}
+.metric .value.state-normal{color:var(--accent)!important}.metric .value.state-warn{color:var(--amber)!important}.metric .value.state-hot{color:var(--red)!important}
+.metric .foot{min-height:14px}
+.grid-heading{grid-column:1/-1;display:flex;align-items:center;gap:12px;margin:9px 2px -3px;color:#e3eff0;font-size:13px;font-weight:700;letter-spacing:.04em}
+.grid-heading::after{height:1px;flex:1;background:linear-gradient(90deg,#2c4a52,transparent);content:""}
+.chart-card{grid-column:span 4;--accent:var(--mint)}
+.chart-card.ram-chart-card{--accent:var(--blue)}
+.chart-card.network-chart-card{--accent:var(--amber)}
+.chart{height:155px}
+.section{gap:12px;flex-wrap:wrap}
+.section h3{font-size:13px;letter-spacing:.01em}
+.section>span,.section span{color:#8ba5ab}
+.toolbar{flex-wrap:wrap}
+.toolbar button{font-size:11px;padding:7px 10px}
+.toolbar button.active{border-color:var(--mint);background:#14362f;color:var(--mint)}
+.sysrow{padding:10px;border:1px solid #203d45;border-radius:10px;background:#0d2026}
+.sysrow label{color:#89a5ab}
+.sysrow strong{color:var(--blue)}
+.netbox{border:1px solid #25424a;background:#0d2026}
+.netbox:first-child strong{color:var(--blue)}.netbox:last-child strong{color:var(--amber)}
+.netbox:first-child em{color:var(--blue)}.netbox:last-child em{color:var(--amber)}
+.track{background:#203a42}
+.fill{background:var(--mint)}
+.fill.warn{background:var(--amber)}.fill.hot{background:var(--red)}
+.status,.state-badge,.count-badge{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1px solid #2b5b4b;border-radius:999px;background:#123128;color:var(--mint);font-size:10px;font-weight:700;letter-spacing:.04em;padding:5px 9px;white-space:nowrap}
+.status{font-size:11px;padding:8px 12px}
+.state-badge.warn,.count-badge.warn{border-color:#73572d;background:#392d18;color:var(--amber)}
+.state-badge.critical,.count-badge.critical{border-color:#713b40;background:#381f24;color:var(--red)}
+.section .count-badge.warn{color:var(--amber)}.section .count-badge.critical{color:var(--red)}
+.status.offline{border-color:#713b40;background:#381f24;color:var(--red)}
+.state-normal{color:var(--mint)!important}.state-warn{color:var(--amber)!important}.state-hot{color:var(--red)!important}
+.alert-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr))}
+.alert{border:1px solid #76572b;border-left:3px solid var(--amber);line-height:1.55}
+.alert.critical{border-color:#713b40;border-left-color:var(--red)}
+table{font-variant-numeric:tabular-nums}
+th{position:sticky;top:0;background:#10232a;color:#8ba7ad;font-size:9px;letter-spacing:.08em}
+td{border-color:#203940}
+td:last-child,th:last-child{text-align:left}
+tbody tr:hover{background:#183139}
+td:first-child{color:#d5e5e7}
+.empty-state{color:#78949a!important;font-style:italic}
+.searchbox{width:min(100%,520px);border-color:#31515b;outline:none}
+.searchbox:focus{border-color:var(--mint);box-shadow:0 0 0 3px #5de0b51e}
+button{transition:background .15s,border-color .15s,color .15s}
+button:hover{border-color:#5de0b5;background:#1a4145}
+.third{grid-column:span 4}
+.half{grid-column:span 6}
+.wide{grid-column:span 12}
+@media(max-width:950px){.chart-card,.third{grid-column:span 6}.disk-card{grid-column:span 12}.half{grid-column:span 12}.hero{padding:18px}}
+@media(max-width:600px){main{padding:14px 12px 24px}.hero{padding:16px;align-items:flex-start}.hero h2{font-size:23px}.clock{display:none}.metric{grid-column:span 6;min-height:144px;padding:14px}.metric .value{font-size:25px}.chart-card,.third,.half,.wide{grid-column:span 12}.card{padding:15px}.sysrows{gap:9px}.section{align-items:flex-start}.toolbar{width:100%}.table-wrap{max-height:260px}table{font-size:10px}#processes th:nth-child(3),#processes td:nth-child(3){display:none}}
 </style></head>
 <body><main>
 <header><div class="brand"><div class="logo">⌁</div><div><h1>Server<span style="color:#63d8b1">Pulse</span></h1><div class="sub">LINUX SERVER MONITOR</div></div></div><div class="actions"><div class="status" id="status">● CONECTANDO</div><button id="refresh">↻ Atualizar</button></div></header>
 <section class="hero"><div><div class="eyebrow">Visão geral do sistema</div><p>Métricas reais coletadas diretamente do Linux.</p></div><div class="clock"><strong id="clock">--:--:--</strong><span id="updated">Aguardando primeira leitura</span></div></section>
 <div class="grid">
-<section class="card metric"><div class="head">Processador · CPU <span>⌁</span></div><div class="value" id="cpu">—</div><div class="foot"><span id="cores">— cores</span><span id="temp">Temp. indisponível</span></div><div class="track"><div class="fill" id="cpu-bar" style="width:0"></div></div></section>
-<section class="card metric"><div class="head">Memória RAM <span>▤</span></div><div class="value" id="ram">—</div><div class="foot"><span id="ram-used">—</span><span id="ram-total">—</span></div><div class="track"><div class="fill" id="ram-bar" style="width:0"></div></div></section>
-<section class="card metric"><div class="head">Armazenamento <span>▰</span></div><div class="value" id="disk">—</div><div class="foot"><span id="disk-mount">—</span><span id="disk-total">—</span></div><div class="track"><div class="fill warn" id="disk-bar" style="width:0"></div></div></section>
-<section class="card metric"><div class="head">Carga do sistema <span>⌁</span></div><div class="value" id="load">—</div><div class="foot"><span>Load average</span><span id="load-detail">1 / 5 / 15 min</span></div><div class="track"><div class="fill" id="load-bar" style="width:0"></div></div></section>
-<section class="card wide"><div class="section"><h3>Histórico de CPU</h3><div class="toolbar"><button class="period active" data-period="24h">24 horas</button><button class="period" data-period="7d">7 dias</button></div></div><div class="chart"><canvas id="cpu-chart"></canvas></div><div id="cpu-peak" class="foot"></div></section>
-<section class="card side"><div class="section"><h3>Histórico de RAM</h3><span>PICO DO PERÍODO</span></div><div class="chart"><canvas id="ram-chart"></canvas></div><div id="ram-peak" class="foot"></div></section>
-<section class="card side"><div class="section"><h3>Informações do host</h3><span>SISTEMA</span></div><div class="sysrows"><div class="sysrow"><label>Hostname</label><strong id="hostname">—</strong></div><div class="sysrow"><label>Sistema</label><strong id="platform">Linux</strong></div><div class="sysrow"><label>Uptime</label><strong id="uptime">—</strong></div><div class="sysrow"><label>Kernel</label><strong id="kernel">—</strong></div><div class="sysrow"><label>Arquitetura</label><strong id="arch">—</strong></div><div class="sysrow"><label>Processos</label><strong id="proc-count">—</strong></div></div></section>
-<section class="card half"><div class="section"><h3>Histórico de rede</h3><span>DOWNLOAD / UPLOAD · <span id="history-window">24H</span></span></div><div class="chart"><canvas id="net-chart"></canvas></div><div id="net-peak" class="foot"></div></section>
-<section class="card half"><div class="section"><h3>Tráfego em tempo real</h3><span id="interfaces">INTERFACES</span></div><div class="netstats"><div class="netbox"><small>↓ DOWNLOAD</small><strong id="rx">—</strong><em id="rx-total">— recebidos</em></div><div class="netbox"><small>↑ UPLOAD</small><strong id="tx">—</strong><em id="tx-total">— enviados</em></div></div></section>
+<div class="grid-heading">Indicadores principais</div>
+<section class="card metric metric-cpu"><div class="head">Processador · CPU <span>⌁</span></div><div class="value" id="cpu">—</div><div class="foot"><span id="cores">— cores</span><span id="temp">Temp. indisponível</span></div><div class="track"><div class="fill" id="cpu-bar" style="width:0"></div></div></section>
+<section class="card metric metric-memory"><div class="head">Memória RAM <span>▤</span></div><div class="value" id="ram">—</div><div class="foot"><span id="ram-used">—</span><span id="ram-total">—</span></div><div class="track"><div class="fill" id="ram-bar" style="width:0"></div></div></section>
+<section class="card metric metric-disk"><div class="head">Armazenamento <span>▰</span></div><div class="value" id="disk">—</div><div class="foot"><span id="disk-mount">—</span><span id="disk-total">—</span></div><div class="track"><div class="fill" id="disk-bar" style="width:0"></div></div></section>
+<section class="card metric metric-load"><div class="head">Carga do sistema <span>⌁</span></div><div class="value" id="load">—</div><div class="foot"><span>Load average</span><span id="load-detail">1 / 5 / 15 min</span></div><div class="track"><div class="fill" id="load-bar" style="width:0"></div></div></section>
+<div class="grid-heading">Histórico de uso</div>
+<section class="card chart-card"><div class="section"><h3>Histórico de CPU</h3><div class="toolbar"><button class="period active" data-period="24h">24 horas</button><button class="period" data-period="7d">7 dias</button></div></div><div class="chart"><canvas id="cpu-chart"></canvas></div><div id="cpu-peak" class="foot"></div></section>
+<section class="card chart-card ram-chart-card"><div class="section"><h3>Histórico de RAM</h3><span>PICO DO PERÍODO</span></div><div class="chart"><canvas id="ram-chart"></canvas></div><div id="ram-peak" class="foot"></div></section>
+<section class="card chart-card network-chart-card"><div class="section"><h3>Histórico de rede</h3><span>DOWNLOAD / UPLOAD · <span id="history-window">24H</span></span></div><div class="chart"><canvas id="net-chart"></canvas></div><div id="net-peak" class="foot"></div></section>
+<div class="grid-heading">Sistema e tráfego</div>
+<section class="card third"><div class="section"><h3>Informações do host</h3><span>SISTEMA</span></div><div class="sysrows"><div class="sysrow"><label>Hostname</label><strong id="hostname">—</strong></div><div class="sysrow"><label>Sistema</label><strong id="platform">Linux</strong></div><div class="sysrow"><label>Uptime</label><strong id="uptime">—</strong></div><div class="sysrow"><label>Kernel</label><strong id="kernel">—</strong></div><div class="sysrow"><label>Arquitetura</label><strong id="arch">—</strong></div><div class="sysrow"><label>Processos</label><strong id="proc-count">—</strong></div></div></section>
+<section class="card third"><div class="section"><h3>Tráfego em tempo real</h3><span id="interfaces">INTERFACES</span></div><div class="netstats"><div class="netbox"><small>↓ DOWNLOAD</small><strong id="rx">—</strong><em id="rx-total">— recebidos</em></div><div class="netbox"><small>↑ UPLOAD</small><strong id="tx">—</strong><em id="tx-total">— enviados</em></div></div></section>
+<section class="card third disk-card"><div class="section"><h3>Volumes montados</h3><span>USO EM DISCO</span></div><div id="disks"><p class="muted">Aguardando dados…</p></div></section>
+<div class="grid-heading">Saúde e disponibilidade</div>
 <section class="card" style="grid-column:span 12"><div class="section"><h3>Alertas</h3><span id="alert-count">MONITORAMENTO ATIVO</span></div><div id="alerts" class="alert-list"><span class="muted">Sem alertas.</span></div></section>
 <section class="card half"><div class="section"><h3>Serviços systemd</h3><span id="systemd-status">—</span></div><div class="table-wrap"><table><thead><tr><th>UNIDADE</th><th>ESTADO</th><th>DESCRIÇÃO</th></tr></thead><tbody id="services"></tbody></table></div></section>
 <section class="card half"><div class="section"><h3>Containers Docker</h3><span id="docker-status">—</span></div><div class="table-wrap"><table><thead><tr><th>NOME</th><th>IMAGEM</th><th>ESTADO</th></tr></thead><tbody id="containers"></tbody></table></div></section>
 <section class="card half"><div class="section"><h3>Portas e conexões TCP</h3><span id="tcp-count">—</span></div><div class="table-wrap"><table><thead><tr><th>PROTOCOLO</th><th>ENDEREÇO</th><th>PORTA</th></tr></thead><tbody id="listeners"></tbody></table></div></section>
 <section class="card half"><div class="section"><h3>Alvos TCP configurados</h3><span>DISPONIBILIDADE</span></div><div class="table-wrap"><table><thead><tr><th>ALVO</th><th>ENDEREÇO</th><th>STATUS</th></tr></thead><tbody id="checks"></tbody></table></div></section>
-<section class="card" style="grid-column:span 12"><div class="section"><h3>Pesquisar no monitoramento</h3><span>PROCESSOS · SYSTEMD · DOCKER · TCP</span></div><input id="search" class="searchbox" type="search" placeholder="Pesquisar nome, serviço, container, endereço ou porta…" aria-label="Pesquisar no monitoramento"><div id="search-results" class="muted" style="margin-top:12px">Digite para pesquisar os itens monitorados.</div></section>
-<section class="card half"><div class="section"><h3>Volumes montados</h3><span>USO EM DISCO</span></div><div id="disks"><p class="muted">Aguardando dados…</p></div></section>
+<div class="grid-heading">Pesquisa e processos</div>
+<section class="card wide"><div class="section"><h3>Pesquisar no monitoramento</h3><span>PROCESSOS · SYSTEMD · DOCKER · TCP</span></div><input id="search" class="searchbox" type="search" placeholder="Pesquisar nome, serviço, container, endereço ou porta…" aria-label="Pesquisar no monitoramento"><div id="search-results" class="muted" style="margin-top:12px">Digite para pesquisar os itens monitorados.</div></section>
 <section class="card" style="grid-column:span 12"><div class="section"><h3>Processos em destaque</h3><span>MAIOR CONSUMO DE CPU</span></div><div style="overflow-x:auto"><table><thead><tr><th>PID</th><th>PROCESSO</th><th>USUÁRIO</th><th>CPU</th><th>MEMÓRIA</th></tr></thead><tbody id="processes"><tr><td colspan="5" class="muted">Aguardando dados…</td></tr></tbody></table></div></section>
 </div><footer class="footer"><span>SERVERPULSE · MONITORAMENTO LINUX</span><span id="polling">Atualização a cada 1 segundo</span></footer>
 </main>
@@ -60,21 +128,23 @@ const pct=n=>(Number(n)||0).toFixed(1)+'%';
 const peakTime=ts=>ts?new Date(ts*1000).toLocaleString('pt-BR'):'—';
 const duration=s=>{const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return (d?d+'d ':'')+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m'};
 function setBar(id,value){const el=$(id);el.style.width=Math.max(0,Math.min(100,value||0))+'%';el.className='fill'+(value>=90?' hot':value>=75?' warn':'')}
+function setMetricTone(id,value,warn=75,critical=90){const el=$(id);el.classList.toggle('state-warn',value>=warn&&value<critical);el.classList.toggle('state-hot',value>=critical);el.classList.toggle('state-normal',value<warn)}
 function drawSeries(id,series,fixedMax){const c=$(id),r=c.getBoundingClientRect(),d=devicePixelRatio||1;if(!r.width)return;c.width=r.width*d;c.height=r.height*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);const w=r.width,h=r.height;x.clearRect(0,0,w,h);x.strokeStyle='#29444c';x.lineWidth=1;for(let i=1;i<=3;i++){x.beginPath();x.moveTo(0,h*i/4);x.lineTo(w,h*i/4);x.stroke()}const all=series.flatMap(s=>s.values);if(!all.length)return;const max=fixedMax||Math.max(1,...all)*1.1;series.forEach(s=>{if(!s.values.length)return;x.beginPath();s.values.forEach((v,i)=>{const px=i/Math.max(1,s.values.length-1)*w,py=h-4-Math.min(max,v)/max*(h-8);i?x.lineTo(px,py):x.moveTo(px,py)});x.strokeStyle=s.color;x.lineWidth=2;x.stroke()})}
 function renderDisks(disks){$('disks').innerHTML=disks.length?disks.map(d=>'<div class="diskrow"><div class="diskmeta"><span>'+esc(d.mount)+' · '+esc(d.device)+'</span><strong>'+fmtBytes(d.used)+' / '+fmtBytes(d.total)+'</strong></div><div class="track"><div class="fill '+(d.percent>=90?'hot':d.percent>=75?'warn':'')+'" style="width:'+Math.min(100,d.percent)+'%"></div></div></div>').join(''):'<p class="muted">Nenhum volume local encontrado.</p>'}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function renderProcesses(rows){$('processes').innerHTML=rows.length?rows.map(p=>'<tr><td>'+p.pid+'</td><td>'+esc(p.name)+'</td><td>'+esc(p.user)+'</td><td>'+pct(p.cpu)+'</td><td>'+fmtBytes(p.memory)+'</td></tr>').join(''):'<tr><td colspan="5">Sem processos visíveis.</td></tr>'}
-function renderServices(data){$('systemd-status').textContent=data.available?data.services.length+' serviços':'INDISPONÍVEL';$('services').innerHTML=data.services.length?data.services.slice(0,250).map(s=>'<tr><td>'+esc(s.unit)+'</td><td>'+esc(s.active+'/'+s.sub)+'</td><td class="wrap">'+esc(s.description)+'</td></tr>').join(''):'<tr><td colspan="3" class="muted">'+esc(data.error||'Nenhum serviço encontrado')+'</td></tr>'}
-function renderContainers(data){$('docker-status').textContent=data.available?data.containers.length+' containers':'INDISPONÍVEL';$('containers').innerHTML=data.containers.length?data.containers.map(c=>'<tr><td>'+esc(c.name)+'</td><td class="wrap">'+esc(c.image)+'</td><td>'+esc(c.status||c.state)+'</td></tr>').join(''):'<tr><td colspan="3" class="muted">'+esc(data.error||'Nenhum container encontrado')+'</td></tr>'}
-function renderList(id,items,columns,empty){$(id).innerHTML=items.length?items.map(item=>'<tr>'+columns.map(column=>'<td class="wrap">'+esc(column(item))+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="'+columns.length+'" class="muted">'+esc(empty)+'</td></tr>'}
-function renderAlerts(items){$('alert-count').textContent=items.length?items.length+' ALERTA(S)':'SEM ALERTAS';$('alerts').innerHTML=items.length?items.map(a=>'<div class="alert '+(a.severity==='critical'?'critical':'')+'">'+esc(a.message)+'</div>').join(''):'<span class="muted">Sem alertas no momento.</span>'}
+function badge(text,tone='normal'){return'<span class="state-badge '+tone+'">'+esc(text)+'</span>'}
+function renderServices(data){const status=$('systemd-status');status.textContent=data.available?data.services.length+' serviços':'INDISPONÍVEL';status.className='count-badge '+(data.available?'':'critical');$('services').innerHTML=data.services.length?data.services.slice(0,250).map(s=>{const failed=s.active==='failed'||s.sub==='failed',running=s.active==='active'&&s.sub==='running';return'<tr><td>'+esc(s.unit)+'</td><td>'+badge(s.active+'/'+s.sub,failed?'critical':running?'normal':'warn')+'</td><td class="wrap">'+esc(s.description)+'</td></tr>'}).join(''):'<tr><td colspan="3" class="empty-state">'+esc(data.error||'Nenhum serviço encontrado')+'</td></tr>'}
+function renderContainers(data){const status=$('docker-status');status.textContent=data.available?data.containers.length+' containers':'INDISPONÍVEL';status.className='count-badge '+(data.available?'':'critical');$('containers').innerHTML=data.containers.length?data.containers.map(c=>'<tr><td>'+esc(c.name)+'</td><td class="wrap">'+esc(c.image)+'</td><td>'+badge(c.status||c.state,c.state.toLowerCase()==='running'?'normal':'warn')+'</td></tr>').join(''):'<tr><td colspan="3" class="empty-state">'+esc(data.error||'Nenhum container encontrado')+'</td></tr>'}
+function renderList(id,items,columns,empty){$(id).innerHTML=items.length?items.map(item=>'<tr>'+columns.map((column,index)=>{const value=column(item);if(id==='checks'&&index===2)return'<td>'+badge(value,value==='ONLINE'?'normal':'critical')+'</td>';if(id==='listeners'&&index===0)return'<td>'+badge(value,'normal')+'</td>';return'<td class="wrap">'+esc(value)+'</td>'}).join('')+'</tr>').join(''):'<tr><td colspan="'+columns.length+'" class="empty-state">'+esc(empty)+'</td></tr>'}
+function renderAlerts(items){const counter=$('alert-count'),critical=items.some(item=>item.severity==='critical');counter.textContent=items.length?items.length+' ALERTA(S)':'SEM ALERTAS';counter.className='count-badge '+(critical?'critical':items.length?'warn':'');$('alerts').innerHTML=items.length?items.map(a=>'<div class="alert '+(a.severity==='critical'?'critical':'')+'">'+esc(a.message)+'</div>').join(''):'<span class="muted">Sem alertas no momento.</span>'}
 function render(d){
 const s=d.system,m=d.memory,n=d.network,disks=d.disks||[];
-$('cpu').textContent=pct(d.cpu.percent);setBar('cpu-bar',d.cpu.percent);$('cores').textContent=s.cpu_count+' CPUs';
-$('temp').textContent=d.cpu.temperatures.length?d.cpu.temperatures[0].celsius+'°C':'Temp. indisponível';
-$('ram').textContent=pct(m.percent);setBar('ram-bar',m.percent);$('ram-used').textContent=fmtBytes(m.used)+' usados';$('ram-total').textContent=fmtBytes(m.total);
-const root=disks.find(x=>x.mount==='/')||disks[0];$('disk').textContent=root?pct(root.percent):'—';$('disk-mount').textContent=root?root.mount:'Sem volume';$('disk-total').textContent=root?fmtBytes(root.total):'—';setBar('disk-bar',root?root.percent:0);
-$('load').textContent=s.load_average[0].toFixed(2);$('load-detail').textContent=s.load_average.map(x=>x.toFixed(2)).join(' / ');setBar('load-bar',s.load_average[0]/s.cpu_count*100);
+$('cpu').textContent=pct(d.cpu.percent);setBar('cpu-bar',d.cpu.percent);setMetricTone('cpu',d.cpu.percent);$('cores').textContent=s.cpu_count+' CPUs';
+const hottest=d.cpu.temperatures.length?Math.max(...d.cpu.temperatures.map(item=>item.celsius)):null;$('temp').textContent=hottest===null?'Temp. indisponível':hottest.toFixed(1)+'°C';$('temp').className=hottest===null?'':hottest>=90?'state-hot':hottest>=80?'state-warn':'state-normal';
+$('ram').textContent=pct(m.percent);setBar('ram-bar',m.percent);setMetricTone('ram',m.percent);$('ram-used').textContent=fmtBytes(m.used)+' usados';$('ram-total').textContent=fmtBytes(m.total);
+const root=disks.find(x=>x.mount==='/')||disks[0];$('disk').textContent=root?pct(root.percent):'—';setMetricTone('disk',root?root.percent:0);$('disk-mount').textContent=root?root.mount:'Sem volume';$('disk-total').textContent=root?fmtBytes(root.total):'—';setBar('disk-bar',root?root.percent:0);
+const normalizedLoad=s.load_average[0]/s.cpu_count*100;$('load').textContent=s.load_average[0].toFixed(2);setMetricTone('load',normalizedLoad);$('load-detail').textContent=s.load_average.map(x=>x.toFixed(2)).join(' / ');setBar('load-bar',normalizedLoad);
 $('hostname').textContent=s.hostname;$('platform').textContent=s.platform;$('uptime').textContent=duration(s.uptime_seconds);$('kernel').textContent=s.kernel;$('arch').textContent=s.architecture;$('proc-count').textContent=d.process_count;
 $('rx').textContent=fmtRate(n.rx_bytes_sec);$('tx').textContent=fmtRate(n.tx_bytes_sec);$('rx-total').textContent=fmtBytes(n.rx_total)+' recebidos';$('tx-total').textContent=fmtBytes(n.tx_total)+' enviados';$('interfaces').textContent=(n.interfaces.map(x=>x.name).join(', ')||'SEM INTERFACE');
 renderDisks(disks);renderProcesses(d.processes||[]);
@@ -82,10 +152,10 @@ renderAlerts(d.alerts||[]);renderServices(d.systemd);renderContainers(d.docker);
 renderList('listeners',d.tcp.listeners||[],[x=>x.protocol,x=>x.address,x=>x.port],d.tcp.error||'Nenhuma porta em escuta');
 $('tcp-count').textContent=d.tcp.available?(d.tcp.established||0)+' conexões ativas · '+(d.tcp.listeners||[]).length+' portas':'INDISPONÍVEL';
 renderList('checks',d.availability||[],[x=>x.name,x=>x.target,x=>x.available?'ONLINE':'INDISPONÍVEL'],'Configure SERVERPULSE_CHECKS para verificar alvos TCP');
-$('status').textContent='● ONLINE';$('status').style.color='#79dfb7';$('updated').textContent='Atualizado '+new Date(d.timestamp).toLocaleTimeString('pt-BR');$('clock').textContent=new Date().toLocaleTimeString('pt-BR');
+$('status').textContent='● ONLINE';$('status').classList.remove('offline');$('updated').textContent='Atualizado '+new Date(d.timestamp).toLocaleTimeString('pt-BR');$('clock').textContent=new Date().toLocaleTimeString('pt-BR');
 }
 async function loadHistory(){try{const r=await fetch('/api/history?period='+historyPeriod,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const h=await r.json(),p=h.points;$('history-window').textContent=historyPeriod.toUpperCase();drawSeries('cpu-chart',[{values:p.map(x=>x.cpu),color:'#58d8b1'}],100);drawSeries('ram-chart',[{values:p.map(x=>x.memory),color:'#7aafff'}],100);drawSeries('net-chart',[{values:p.map(x=>x.rx_rate),color:'#58d8b1'},{values:p.map(x=>x.tx_rate),color:'#e9b65d'}]);$('cpu-peak').textContent='Pico: '+pct(h.peaks.cpu_percent)+' · '+peakTime(h.peaks.timestamps.cpu)+' · '+p.length+' amostras agrupadas';$('ram-peak').textContent='Pico: '+pct(h.peaks.memory_percent)+' · '+fmtBytes(h.peaks.memory_used)+' · '+peakTime(h.peaks.timestamps.memory);$('net-peak').textContent='Pico download: '+fmtRate(h.peaks.rx_bytes_sec)+' ('+peakTime(h.peaks.timestamps.rx_rate)+') · upload: '+fmtRate(h.peaks.tx_bytes_sec)+' ('+peakTime(h.peaks.timestamps.tx_rate)+')'}catch(e){$('cpu-peak').textContent='Histórico indisponível: '+e.message}}
-async function poll(){try{const r=await fetch('/api/metrics',{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);render(await r.json())}catch(e){$('status').textContent='● SEM CONEXÃO';$('status').style.color='#ff9999';$('updated').textContent=e.message}}
+async function poll(){try{const r=await fetch('/api/metrics',{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);render(await r.json())}catch(e){$('status').textContent='● SEM CONEXÃO';$('status').classList.add('offline');$('updated').textContent=e.message}}
 async function search(){const q=$('search').value.trim();const box=$('search-results');if(!q){box.textContent='Digite para pesquisar os itens monitorados.';return}try{const r=await fetch('/api/search?q='+encodeURIComponent(q),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const data=await r.json(),groups=data.results,labels={processes:'Processos',systemd:'Serviços systemd',docker:'Containers Docker',tcp:'Portas TCP',availability:'Alvos monitorados'};const found=Object.entries(groups).filter(([,items])=>items.length);box.innerHTML=found.length?found.map(([name,items])=>'<div style="margin:10px 0"><strong>'+labels[name]+' ('+items.length+')</strong><ul>'+items.slice(0,30).map(item=>'<li>'+esc(Object.values(item).filter(Boolean).join(' · '))+'</li>').join('')+'</ul></div>').join(''):'Nenhum resultado encontrado.'}catch(e){box.textContent='Pesquisa indisponível: '+e.message}}
 document.querySelectorAll('.period').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.period').forEach(item=>item.classList.remove('active'));button.classList.add('active');historyPeriod=button.dataset.period;loadHistory()}));
 $('search').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(search,250)});
